@@ -37,6 +37,8 @@ model = pyo.ConcreteModel(name='PV - Storage Model Optimisation')
 model.T = pyo.Set(initialize = pyo.RangeSet(len(df_irradiance)), ordered=True) 
 
 model.PV_Costs = pyo.Param(initialize=(df_economic.loc['CAPEX_PV','Input']), mutable=(True))    #In order to perform sensitiviy analisis, the variable has to be saved in a PYOMO Parameter... 
+model.Storage_Costs = pyo.Param(initialize=df_economic.loc['CAPEX_Storage','Input'], mutable=(True))
+
 model.x1 = pyo.Var(within=pyo.NonNegativeReals, initialize=(1))                                 # Area PV
 model.x2 = pyo.Var(within=pyo.NonNegativeReals, initialize=(1))                                 # Storage Size
 
@@ -88,7 +90,7 @@ model.c6 = pyo.Constraint(model.T, rule=charge_flow)
 # model.c7 = pyo.Constraint(model.T, rule=SoC_eq3)
 
 def OF (model):
-     return (model.x1*model.PV_Costs) + (model.x2*df_economic.loc['CAPEX_Storage','Input'])
+     return (model.x1*model.PV_Costs) + (model.x2*model.Storage_Costs)
 
 model.OB = pyo.Objective(rule=OF, sense = pyo.minimize)
 
