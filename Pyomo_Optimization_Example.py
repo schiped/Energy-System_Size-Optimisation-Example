@@ -158,17 +158,16 @@ with pd.ExcelWriter(' Python output.xlsx') as writer:
     
 # # Sensitivity Analysis - How the objective changes with for example different PV cost? 
 Sensitivityity={}
-for counter in range(150000,500000,50000):
-    model.PV_Costs=counter                                                      # Making the Parameter Mutuable=True, now I change the variable to perform a sensitivity analysis. 
+for variable_PVcosts in range(150000,500000,50000):
+    model.PV_Costs=variable_PVcosts         # Making the Parameter Mutuable=True, now I change the variable to perform a sensitivity analysis. 
     results = opt.solve(model) 
-    print(counter, pyo.value(model.OB))
-    Sensitivityity[counter,'OF']=pyo.value(model.OB)
-    
+    print(variable_PVcosts, pyo.value(model.OB))
+    Sensitivityity[variable_PVcosts,'OF']=pyo.value(model.OB)
+
 #Creating Graph:
-Y=[Sensitivityity[counter,'OF'] for counter in range(150000,500000,50000)]
-X=[counter for counter in range(150000,500000,50000)]
+Y=[Sensitivityity[variable_PVcosts,'OF'] for variable_PVcosts in range(150000,500000,50000)]
+X=[variable_PVcosts for variable_PVcosts in range(150000,500000,50000)]
 plt.plot(X,Y)
 plt.ylabel('Cost function')
-plt.xlabel('CAPEX PV value')   
-
+plt.xlabel('CAPEX PV')   
     
