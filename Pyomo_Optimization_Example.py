@@ -165,8 +165,8 @@ for variable_PVcosts in range(1500000,5000000,500000): #range(start, stop, step)
     Sensitivityity[variable_PVcosts,'OF']=pyo.value(model.OB)
 
 #Creating Graph:
-Y=[Sensitivityity[variable_PVcosts,'OF'] for variable_PVcosts in range(150000,500000,50000)]
-X=[variable_PVcosts for variable_PVcosts in range(150000,500000,50000)]
+Y=[Sensitivityity[variable_PVcosts,'OF'] for variable_PVcosts in range(1500000,5000000,500000)]
+X=[variable_PVcosts for variable_PVcosts in range(1500000,5000000,500000)]
 plt.plot(X,Y)
 plt.ylabel('Cost function')
 plt.xlabel('CAPEX PV')   
