@@ -158,7 +158,7 @@ with pd.ExcelWriter(' Python output.xlsx') as writer:
     
 # # Sensitivity Analysis - How the objective changes with for example different PV cost? 
 Sensitivityity={}
-for variable_PVcosts in range(1500000,500000,5000000):
+for variable_PVcosts in range(1500000,5000000,500000): #range(start, stop, step)
     model.PV_Costs=variable_PVcosts         # Making the Parameter Mutuable=True, now I change the variable to perform a sensitivity analysis. 
     results = opt.solve(model) 
     print(variable_PVcosts, pyo.value(model.OB))
