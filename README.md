@@ -1,5 +1,10 @@
 # Energy-System_Size-Optimisation-Example
-Size optimization of a energy system consisting in PV + Batteries + yearly demand.
+This is an example of a exersice during a master course. 
 
-Example of an energy model problem optimization during a master course.
-Standalone energy system with a demand from a School in a selected region (Iringa, Tanzania) supplied by PV and Storage system. 
+A simple example of an optimisation energy model. It uses MILP to optimise the size of each energy asset.
+Standalone energy system consisting of PV panels and Batteries.
+
+The electricity demand is given, which in this case it is for a school in Iringa, Tanzania.
+
+
+
