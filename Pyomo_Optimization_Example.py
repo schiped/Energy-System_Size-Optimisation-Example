@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import os
 
 #Read Impout File
-cwd = os.getcwd()     #get Current Working Directory        
+cwd = os.path.dirname(os.path.abspath(__file__))     #folder of this script, so it runs from anywhere
+os.makedirs(os.path.join(cwd, 'results'), exist_ok=True)
  
 input_file = os.path.join(cwd, 'input', "input_file.xlsx")                      #create Input File directory
 # input_data = pd.ExcelFile(input_file)                                         #Read input file
@@ -94,9 +95,9 @@ def OF (model):
 
 model.OB = pyo.Objective(rule=OF, sense = pyo.minimize)
 
-opt = pyo.SolverFactory('glpk')
-results = opt.solve(model, tee=True)
-results.write()
+opt = pyo.SolverFactory('appsi_highs')   # free solver from pip (highspy); 'glpk' also works if installed
+results = opt.solve(model)
+print(results.solver.termination_condition)
 
 print('--------------------------------')
 print('Decision Variables: ')
@@ -127,14 +128,16 @@ for i in model.T:
         
 x = [t for t in model.T]                                                        # time varialbe for the plots.. 
 #Plot 1 week: 
-plt.plot(x[0:168],SoC[0:168],label='SoC')
-plt.plot(x[0:168],Battery_charge[0:168],label='Charge') 
-plt.plot(x[0:168],Battery_discharge[0:168],label='DisCharge')
-plt.plot(x[0:168],PV_production[0:168],label='PV')
-
-# plt.xticks(X,XL)
-plt.legend()
-plt.show()
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot(x[0:168],SoC[0:168],label='State of charge (kWh)')
+ax.plot(x[0:168],PV_production[0:168],label='PV production (kWh)')
+ax.plot(x[0:168],Battery_charge[0:168],label='Charge') 
+ax.plot(x[0:168],Battery_discharge[0:168],label='Discharge')
+ax.set_xlabel('Hour of the year')
+ax.set_title('First week: off-grid school, optimal PV + battery')
+ax.legend(frameon=False)
+fig.tight_layout()
+fig.savefig(os.path.join(cwd, 'results', 'first_week.png'), dpi=150)
 
 
 df_c1 = pd.DataFrame(c1)   
@@ -147,7 +150,7 @@ df_PVcurtailment = pd.DataFrame(PVcurtailment)
 
 #Export to excel
 
-with pd.ExcelWriter(' Python output.xlsx') as writer:
+with pd.ExcelWriter(os.path.join(cwd, 'results', 'python_output.xlsx')) as writer:
     df_c1[0].to_excel(writer, sheet_name="Balance Constraint")
     df_SoC[0].to_excel(writer, sheet_name="SoC")
     df_PV_production[0].to_excel(writer, sheet_name="PV Production")
@@ -167,7 +170,11 @@ for variable_PVcosts in range(1500000,5000000,500000): #range(start, stop, step)
 #Creating Graph:
 Y=[Sensitivityity[variable_PVcosts,'OF'] for variable_PVcosts in range(1500000,5000000,500000)]
 X=[variable_PVcosts for variable_PVcosts in range(1500000,5000000,500000)]
-plt.plot(X,Y)
-plt.ylabel('Cost function')
-plt.xlabel('CAPEX PV')   
+fig, ax = plt.subplots(figsize=(7, 4))
+ax.plot(X,Y,'o-')
+ax.set_ylabel('Total system cost')
+ax.set_xlabel('CAPEX PV per ha')
+ax.set_title('Sensitivity of the optimal system cost to PV capex')
+fig.tight_layout()
+fig.savefig(os.path.join(cwd, 'results', 'sensitivity_pv_capex.png'), dpi=150)   
     
